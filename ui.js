@@ -83,6 +83,18 @@
     });
   }
 
+  // بانر تثبيت PWA - يخفي اللينك ويدعو للتثبيت (الناس تثبّتوه بضغطة)
+  var deferredPrompt = null;
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    var banner = $('installBanner');
+    if (banner) banner.style.display = 'flex';
+  });
+  window.addEventListener('appinstalled', function () {
+    var banner = $('installBanner');
+    if (banner) banner.style.display = 'none';
+  });
   function init() {
     applyTheme();
     setLang(LANG);
@@ -96,6 +108,19 @@
       var apk = document.getElementById('apkBtn');
       if (apk) apk.style.display = 'inline-block';
     }
+    // بانر التثبيت: زر التثبيت + الإغلاق
+    var ib = $('installBtn');
+    if (ib) ib.addEventListener('click', function () {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(function () { deferredPrompt = null; });
+      } else {
+        // fallback: أرشد المستخدم للقائمة (⋮ → إضافة للشاشة الرئيسية)
+        alert(t('installHint') || 'من قائمة المتصفح (⋮) اختر "إضافة إلى الشاشة الرئيسية"');
+      }
+    });
+    var ic = $('installClose');
+    if (ic) ic.addEventListener('click', function () { $('installBanner').style.display = 'none'; });
     // tab buttons
     ['prayer','tasbih','names','adhkar'].forEach(function (n) {
       $('tabBtn-' + n).addEventListener('click', function () { showTab(n); });

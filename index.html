@@ -108,6 +108,24 @@
     background:rgba(20,36,30,.92);color:#fff;padding:11px 20px;border-radius:22px;font-size:13px;opacity:0;transition:.3s;z-index:99;backdrop-filter:blur(8px)}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   [id^=tab-]{display:none}
+  /* بانر تثبيت PWA - يخفي اللينك ويدعو للتثبيت */
+  .install-banner{
+    display:flex;align-items:center;gap:8px;margin:0 0 12px;padding:11px 14px;border-radius:18px;
+    background:linear-gradient(135deg,rgba(15,110,79,.92),rgba(12,89,64,.92));color:#fff;
+    box-shadow:0 6px 20px rgba(15,110,79,.25);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    border:1px solid rgba(255,255,255,.25);font-size:13px;
+  }
+  .install-banner .ib-icon{font-size:18px}
+  .install-banner .ib-text{flex:1;line-height:1.4}
+  .install-banner .ib-btn{
+    background:linear-gradient(135deg,var(--gold),#b8860b);color:#1a1205;font-weight:800;border:none;
+    padding:8px 16px;border-radius:14px;cursor:pointer;font-size:13px;box-shadow:0 3px 10px rgba(212,160,23,.35);transition:.15s
+  }
+  .install-banner .ib-btn:active{transform:scale(.95)}
+  .install-banner .ib-close{
+    background:rgba(255,255,255,.15);border:none;color:#fff;width:26px;height:26px;border-radius:50%;
+    cursor:pointer;font-size:12px;flex-shrink:0
+  }
   /* زر تحميل APK - منسجم مع Glassmorphism، يظهر على أندرويد فقط */
   .apk-btn{
     display:inline-block;margin-top:12px;padding:11px 20px;border-radius:24px;
@@ -120,7 +138,13 @@
 </head>
 <body data-theme="light">
 <div class="wrap">
-  <header>
+  <div class="install-banner" id="installBanner" style="display:none">
+  <span class="ib-icon">📲</span>
+  <span class="ib-text" id="ibText">ثبّت التطبيق على هاتفك للاستخدام بدون متصفح</span>
+  <button class="ib-btn" id="installBtn">تثبيت</button>
+  <button class="ib-close" id="installClose" aria-label="إغلاق">✕</button>
+</div>
+<header>
     <h1 id="appTitle">🕌 مواقيت الصلاة</h1>
     <div class="hijri" id="hijriDate">—</div>
     <div class="hijri" id="cityName">—</div>
