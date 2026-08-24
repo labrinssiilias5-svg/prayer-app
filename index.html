@@ -108,6 +108,14 @@
     background:rgba(20,36,30,.92);color:#fff;padding:11px 20px;border-radius:22px;font-size:13px;opacity:0;transition:.3s;z-index:99;backdrop-filter:blur(8px)}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   [id^=tab-]{display:none}
+  /* زر تحميل APK - منسجم مع Glassmorphism، يظهر على أندرويد فقط */
+  .apk-btn{
+    display:inline-block;margin-top:12px;padding:11px 20px;border-radius:24px;
+    background:linear-gradient(135deg,var(--gold),#b8860b);color:#1a1205;font-weight:800;
+    text-decoration:none;font-size:14px;box-shadow:0 5px 16px rgba(212,160,23,.35);
+    border:1px solid rgba(255,255,255,.5);transition:.15s;
+  }
+  .apk-btn:active{transform:scale(.97)}
 </style>
 </head>
 <body data-theme="light">
@@ -194,7 +202,8 @@
 
   <footer>
     تطبيق مجاني مفتوح المصدر — حساب محلي 100% بلا إنترنت.<br>
-    الصوت: Adhan by Aaqib Azeez (CC BY-SA 4.0) عبر Wikimedia Commons.
+    الصوت: Adhan by Aaqib Azeez (CC BY-SA 4.0) عبر Wikimedia Commons.<br>
+    <a id="apkBtn" class="apk-btn" href="https://github.com/labrinssiilias5-svg/prayer-app/releases/latest/download/prayer-app.apk" download style="display:none">⬇️ تحميل التطبيق للأندرويد (APK)</a>
   </footer>
 </div>
 

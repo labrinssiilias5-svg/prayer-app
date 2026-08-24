@@ -88,6 +88,14 @@
     setLang(LANG);
     renderNames();
     renderAdhkar();
+    // إظهار زر APK على أندرويد فقط (يخفى على iPhone/iOS)
+    var ua = navigator.userAgent || '';
+    var isAndroid = /Android/i.test(ua);
+    var isIOS = /iPhone|iPad|iPod/i.test(ua);
+    if (isAndroid && !isIOS) {
+      var apk = document.getElementById('apkBtn');
+      if (apk) apk.style.display = 'inline-block';
+    }
     // tab buttons
     ['prayer','tasbih','names','adhkar'].forEach(function (n) {
       $('tabBtn-' + n).addEventListener('click', function () { showTab(n); });
