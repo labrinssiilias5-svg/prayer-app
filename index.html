@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f6e4f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>مواقيت الصلاة - أذان</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.png">
+<style>
+  :root{--green:#0f6e4f;--green-d:#0c5940;--gold:#d4a017;--bg:#eef5f1;--card:rgba(255,255,255,.55);--txt:#14241e;--mut:#5a6f66;--bor:rgba(255,255,255,.6);--blur:18px}
+  body[data-theme="dark"]{--green:#1a8c66;--green-d:#0f6e4f;--gold:#e6b84a;--bg:#10231d;--card:rgba(22,48,42,.55);--txt:#eaf4ef;--mut:#9fb5ad;--bor:rgba(255,255,255,.12);--blur:18px}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;width:100%;overflow-x:hidden}
+  body{
+    font-family:'Segoe UI',Tahoma,'Noto Naskh Arabic',sans-serif;
+    color:var(--txt);
+    min-height:100vh;
+    position:relative;
+    background:var(--bg);
+  }
+  /* خلفية الكعبة الشريفة + overlay أبيض شبه شفاف */
+  body::before{
+    content:"";position:fixed;inset:0;z-index:-2;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.78) 0%, rgba(255,255,255,.62) 45%, rgba(238,245,241,.85) 100%),
+      url('assets/img/kaaba.jpg') center 18% / cover no-repeat;
+    background-attachment:fixed;
+  }
+  body[data-theme="dark"]::before{
+    background:
+      linear-gradient(180deg, rgba(12,30,25,.80) 0%, rgba(12,30,25,.62) 50%, rgba(8,20,16,.88) 100%),
+      url('assets/img/kaaba.jpg') center 18% / cover no-repeat;
+  }
+  .wrap{max-width:540px;margin:0 auto;padding:14px 14px 96px;width:100%}
+  header{
+    background:var(--card);
+    backdrop-filter:blur(var(--blur));-webkit-backdrop-filter:blur(var(--blur));
+    border:1px solid var(--bor);
+    border-radius:22px;padding:22px 16px 16px;text-align:center;
+    box-shadow:0 8px 30px rgba(15,110,79,.12);
+    margin-bottom:6px;
+  }
+  header h1{margin:0;font-size:21px;font-weight:800;color:var(--green-d);letter-spacing:.3px}
+  .hijri{font-size:13px;opacity:.85;margin-top:5px;color:var(--mut)}
+  .topbar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:12px 0;flex-wrap:wrap}
+  .topbar select,.topbar button{
+    padding:9px 12px;border-radius:12px;border:1px solid var(--bor);
+    background:var(--card);backdrop-filter:blur(var(--blur));-webkit-backdrop-filter:blur(var(--blur));
+    color:var(--txt);font-size:13px;cursor:pointer;
+  }
+  .topbar button:active{transform:scale(.96)}
+  .tabs{display:flex;gap:6px;position:fixed;bottom:0;left:0;right:0;max-width:540px;margin:0 auto;
+    background:var(--card);backdrop-filter:blur(var(--blur));-webkit-backdrop-filter:blur(var(--blur));
+    border-top:1px solid var(--bor);padding:8px;z-index:50}
+  .tabs button{flex:1;padding:11px 4px;border:none;background:transparent;color:var(--mut);
+    font-size:13px;font-weight:700;border-radius:12px;cursor:pointer;transition:.2s}
+  .tabs button.active{background:linear-gradient(135deg,var(--green),var(--green-d));color:#fff;
+    box-shadow:0 4px 14px rgba(15,110,79,.3)}
+  .card{
+    background:var(--card);backdrop-filter:blur(var(--blur));-webkit-backdrop-filter:blur(var(--blur));
+    border:1px solid var(--bor);border-radius:20px;padding:18px;margin:14px 0;
+    box-shadow:0 6px 22px rgba(15,110,79,.10);
+  }
+  .next{text-align:center;background:linear-gradient(135deg,rgba(255,255,255,.7),rgba(255,255,255,.45));border:1px solid var(--gold)}
+  body[data-theme="dark"] .next{background:linear-gradient(135deg,rgba(26,140,102,.5),rgba(22,48,42,.4))}
+  .next .time{font-size:46px;font-weight:800;color:var(--green-d);text-align:center;font-variant-numeric:tabular-nums;line-height:1.1}
+  .next .name{text-align:center;font-size:17px;font-weight:800;color:var(--gold);margin-top:2px}
+  .next .lab{text-align:center;font-size:13px;color:var(--mut)}
+  .row{display:flex;justify-content:space-between;align-items:center;padding:15px 6px;border-bottom:1px solid rgba(15,110,79,.10)}
+  .row:last-child{border-bottom:none}
+  .row .n{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:600}
+  .row .t{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--txt)}
+  .row.active{background:linear-gradient(90deg,rgba(212,160,23,.18),transparent);
+    border-right:4px solid var(--gold);border-radius:10px}
+  .row.active .t{color:var(--gold)}
+  .controls select{width:100%;padding:12px;border-radius:12px;border:1px solid var(--bor);
+    font-size:15px;background:var(--card);backdrop-filter:blur(var(--blur));-webkit-backdrop-filter:blur(var(--blur));color:var(--txt)}
+  .btn{background:linear-gradient(135deg,var(--green),var(--green-d));color:#fff;border:none;padding:13px;border-radius:13px;
+    font-weight:800;font-size:15px;cursor:pointer;width:100%;margin-top:10px;box-shadow:0 5px 16px rgba(15,110,79,.28);transition:.15s}
+  .btn:active{transform:scale(.98);box-shadow:0 3px 10px rgba(15,110,79,.22)}
+  .compass{display:flex;flex-direction:column;align-items:center;padding:18px}
+  .needle{font-size:74px;transition:transform .7s cubic-bezier(.34,anic,.64,1);
+    filter:drop-shadow(0 4px 10px rgba(15,110,79,.25))}
+  .qtxt{font-size:14px;color:var(--mut);margin-top:10px;font-weight:600;
+    background:var(--card);padding:8px 16px;border-radius:20px;border:1px solid var(--bor);
+    backdrop-filter:blur(var(--blur));-webkit-backdrop-filter:blur(var(--blur))}
+  .opt{display:flex;align-items:center;gap:10px;font-size:14px;padding:9px 0;font-weight:600}
+  .opt input{width:19px;height:19px;accent-color:var(--green)}
+  .filebox{margin-top:10px;font-size:13px;color:var(--mut);display:flex;flex-direction:column;gap:6px}
+  .tasbih-circle{width:200px;height:200px;border-radius:50%;
+    background:linear-gradient(135deg,var(--green),var(--green-d));color:#fff;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;margin:20px auto;cursor:pointer;
+    box-shadow:0 12px 34px rgba(15,110,79,.35);user-select:none;transition:.15s;border:3px solid rgba(212,160,23,.4)}
+  .tasbih-circle:active{transform:scale(.97)}
+  .tasbih-circle .num{font-size:54px;font-weight:800}
+  .tasbih-circle .lbl{font-size:13px;opacity:.9}
+  .names-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .name-cell{background:var(--card);border:1px solid var(--bor);border-radius:12px;padding:11px;font-size:14px;text-align:center;
+    backdrop-filter:blur(var(--blur));-webkit-backdrop-filter:blur(var(--blur));font-weight:600}
+  .dhikr{background:var(--card);border:1px solid var(--bor);border-radius:14px;padding:15px;margin:10px 0;font-size:14px;line-height:1.9;
+    backdrop-filter:blur(var(--blur));-webkit-backdrop-filter:blur(var(--blur))}
+  .sec-h{font-size:17px;font-weight:800;margin:6px 0 6px;color:var(--green-d)}
+  footer{text-align:center;font-size:11px;color:var(--mut);padding:16px 0 4px;line-height:1.7}
+  .toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:rgba(20,36,30,.92);color:#fff;padding:11px 20px;border-radius:22px;font-size:13px;opacity:0;transition:.3s;z-index:99;backdrop-filter:blur(8px)}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  [id^=tab-]{display:none}
+</style>
+</head>
+<body data-theme="light">
+<div class="wrap">
+  <header>
+    <h1 id="appTitle">🕌 مواقيت الصلاة</h1>
+    <div class="hijri" id="hijriDate">—</div>
+    <div class="hijri" id="cityName">—</div>
+  </header>
+
+  <div class="topbar">
+    <select id="langSel">
+      <option value="ar">العربية</option>
+      <option value="fr">Français</option>
+      <option value="en">English</option>
+    </select>
+    <span id="langLbl" style="font-size:12px;color:var(--mut)">اللغة</span>
+    <button id="themeToggle">🌙/☀️</button>
+    <span id="themeLbl" style="font-size:12px;color:var(--mut)">الثيم</span>
+  </div>
+
+  <!-- TAB: PRAYER -->
+  <div id="tab-prayer">
+    <div class="card next">
+      <div class="lab" id="nextLabel">الصلاة القادمة</div>
+      <div class="time" id="nextTime">--:--</div>
+      <div class="name" id="nextName">—</div>
+    </div>
+    <div class="card">
+      <div id="prayerList"></div>
+    </div>
+    <div class="card">
+      <div class="controls">
+        <label id="cityLabel" style="font-size:13px;color:var(--mut)">المدينة</label>
+        <select id="city"></select>
+        <button class="btn" id="gpsBtn">📍 موقعي الحالي (GPS)</button>
+      </div>
+      <div class="compass">
+        <div class="needle" id="qibla">🧭</div>
+        <div class="qtxt" id="qiblaTxt">اتجاه القبلة: --°</div>
+      </div>
+    </div>
+    <div class="card">
+      <label class="opt"><input type="checkbox" id="sound" checked> <span id="soundLbl">تشغيل صوت الأذان</span></label>
+      <label class="opt"><input type="checkbox" id="notif"> <span id="notifLbl">إشعار قبل وقت الصلاة</span></label>
+      <button class="btn" id="testAdhan">▶ تشغيل الأذان (تجربة)</button>
+      <div class="filebox">
+        <label id="addFileLbl" for="adhanFile">📁 أضف ملف أذان شخصي:</label>
+        <input type="file" id="adhanFile" accept="audio/*">
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: TASBIH -->
+  <div id="tab-tasbih">
+    <div class="card">
+      <div class="sec-h" id="tasbihTitle">المسبحة</div>
+      <div class="tasbih-circle" id="tasbihBtn">
+        <div class="num" id="tasbihNum">0</div>
+        <div class="lbl" id="tasbihCount">العدد: 0</div>
+      </div>
+      <button class="btn" id="tasbihReset">إعادة</button>
+    </div>
+  </div>
+
+  <!-- TAB: NAMES -->
+  <div id="tab-names">
+    <div class="card">
+      <div class="sec-h" id="namesTitle">أسماء الله الحسنى</div>
+      <div class="names-grid" id="namesGrid"></div>
+    </div>
+  </div>
+
+  <!-- TAB: ADHKAR -->
+  <div id="tab-adhkar">
+    <div class="card">
+      <div class="sec-h" id="adhkarTitle">أذكار الصباح والمساء</div>
+      <div class="sec-h" id="morningH" style="color:var(--gold)">أذكار الصباح</div>
+      <div id="morningList"></div>
+      <div class="sec-h" id="eveningH" style="color:var(--gold)">أذكار المساء</div>
+      <div id="eveningList"></div>
+    </div>
+  </div>
+
+  <footer>
+    تطبيق مجاني مفتوح المصدر — حساب محلي 100% بلا إنترنت.<br>
+    الصوت: Adhan by Aaqib Azeez (CC BY-SA 4.0) عبر Wikimedia Commons.
+  </footer>
+</div>
+
+<div class="tabs">
+  <button id="tabBtn-prayer">الصلاة</button>
+  <button id="tabBtn-tasbih">المسبحة</button>
+  <button id="tabBtn-names">الأسماء</button>
+  <button id="tabBtn-adhkar">الأذكار</button>
+</div>
+
+<div class="toast" id="toast"></div>
+<script defer src="prayer.js"></script>
+<script defer src="cities.js"></script>
+<script defer src="adhan.js"></script>
+<script defer src="i18n.js"></script>
+<script defer src="data.js"></script>
+<script defer src="app.js"></script>
+<script defer src="ui.js"></script>
+<script>window.addEventListener('load',function(){if(typeof UI!=='undefined')UI.init();});</script>
+</body>
+</html>
