@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.labrinssiilias.prayerapp",
+    "sha256_cert_fingerprints": ["2C:EF:08:DD:46:9B:D9:DA:8E:FE:B4:01:AA:C3:2A:50:A6:D7:E6:56:96:84:51:2E:D0:14:77:09:53:D2:51:4F"]
+  }
+}]
