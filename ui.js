@@ -106,7 +106,28 @@
     var isIOS = /iPhone|iPad|iPod/i.test(ua);
     if (isAndroid && !isIOS) {
       var apk = document.getElementById('apkBtn');
-      if (apk) apk.style.display = 'inline-block';
+      if (apk) {
+        apk.style.display = 'inline-block';
+        // تحميل عبر Blob (يحل مشكل "عالق" فـ Chrome Android مع APK بلا Content-Disposition)
+        apk.addEventListener('click', function (e) {
+          e.preventDefault();
+          var url = apk.getAttribute('href');
+          var orig = apk.textContent;
+          apk.textContent = '⏳ جاري التحميل...';
+          fetch(url).then(function (r) { return r.blob(); }).then(function (blob) {
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'prayer-app.apk';
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+            apk.textContent = orig;
+          }).catch(function () {
+            // fallback: اترك المتصفح يتعامل مع الرابط مباشرة
+            window.location.href = url;
+          });
+        });
+      }
     }
     // بانر التثبيت: زر التثبيت + الإغلاق
     var ib = $('installBtn');
