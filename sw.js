@@ -1,6 +1,6 @@
 // sw.js - Service Worker لتطبيق "مواقيت الصلاة - أذان"
 // يخزّن الملفات محلياً بصح يخدم بلا إنترنت (PWA).
-const CACHE = 'prayer-app-v1';
+const CACHE = 'prayer-app-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -8,6 +8,9 @@ const ASSETS = [
   './cities.js',
   './adhan.js',
   './app.js',
+  './ui.js',
+  './i18n.js',
+  './data.js',
   './manifest.json',
   './icon.png',
   './icon512.png',
