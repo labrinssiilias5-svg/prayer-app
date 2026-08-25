@@ -66,7 +66,7 @@
     scheduleAlarms(times);
   }
 
-  // جدولة تنبيه قبل كل صلاة (بـ setTimeout لليوم الحالي + Notification لو مسموح)
+  // جدولة تنبيه قبل كل صلاة + فحص دوري احتياطي (يضمن التشغيل حتى لو تلغى timers)
   function scheduleAlarms(times) {
     timers.forEach(clearTimeout); timers = [];
     var now = new Date();
@@ -82,12 +82,38 @@
     });
   }
 
+  // فحص دوري كل دقيقة: إذا دخلنا وقت صلاة جديدة لم تُطلق بعد → شغّل الأذان
+  var lastFiredKey = '';
+  function checkPrayerNow() {
+    try {
+      var citySel = $('city');
+      var idx = citySel.selectedIndex >= 0 ? citySel.selectedIndex : 0;
+      var city = Cities.list[idx] || Cities.list[0];
+      var now = new Date();
+      var tz = Cities.tzOffsetFor(city.lat, city.lng, now);
+      var times = PrayerCalc.getTimes(now, { lat: city.lat, lng: city.lng }, tz, 'MWL');
+      var curM = now.getHours() * 60 + now.getMinutes();
+      // ابحث عن أقرب صلاة دخل وقتها الآن (خلال آخر دقيقة)
+      ORDER.forEach(function (k) {
+        if (k === 'sunrise') return;
+        var m = parseHM(times[k]);
+        var key = k + ':' + now.toDateString();
+        if (curM >= m && curM <= m + 1) {
+          if (lastFiredKey !== key) {
+            lastFiredKey = key;
+            fireAlarm(NAMES[k] || k);
+          }
+        }
+      });
+    } catch (e) {}
+  }
+
   function fireAlarm(name) {
     toast('حان وقت ' + name);
     var userAdhan = localStorage.getItem('userAdhan');
     // تحقق أمني: نقبل غير data:audio أو blob: (مانعا حقن javascript:)
     var src = 'assets/audio/adhan_aqib_azeez.mp3';
-    if (userAdhan && /^^(data:audio\/|blob:)/.test(userAdhan)) {
+    if (userAdhan && /^(data:audio\/|blob:)/.test(userAdhan)) {
       src = userAdhan;
     }
     if ($('sound').checked) {
@@ -97,7 +123,7 @@
       } catch (e) { if (window.Adhan) Adhan.chime(); }
     }
     if ($('notif').checked && 'Notification' in window && Notification.permission === 'granted') {
-      new Notification('مواقيت الصلاة', { body: 'حان وقت ' + name });
+      try { new Notification('مواقيت الصلاة', { body: 'حان وقت ' + name }); } catch (e) {}
     }
   }
 
@@ -166,8 +192,14 @@
       };
       r.readAsDataURL(f);
     });
+    // طلب إذن الإشعارات أوتوماتيكياً (للتنبيه حتى في background)
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission().catch(function(){});
+    }
     render();
     setInterval(render, 30000); // تحديث كل 30 ثانية
+    setInterval(checkPrayerNow, 60000); // فحص دقيقة: تشغيل الأذان عند دخول الوقت
+    checkPrayerNow();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
